@@ -1,0 +1,44 @@
+/* RobotReveal — shared styles, framework-agnostic. */
+
+.robot-reveal {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #000;
+  border-radius: 16px;
+  /* Suppress the blue tap-highlight / text selection while dragging the reveal. */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.robot-reveal__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The base layer stays IN FLOW so the component has an intrinsic size of its
+   own. When both layers were absolutely positioned the box collapsed to
+   nothing inside any shrink-to-fit parent (flex item, grid cell, float),
+   and `max-width` never got a chance to apply. */
+.robot-reveal__img--base {
+  position: relative;
+  z-index: 1;
+}
+
+.robot-reveal__img--hover {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  z-index: 2;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}

@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Local-only working files, kept off the repo by choice
+robot-reveal.zip
+robot-reveal/
+
+# Vercel
+.vercel
