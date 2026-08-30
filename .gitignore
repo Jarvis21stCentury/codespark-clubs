@@ -7,3 +7,4 @@ robot-reveal/
 
 # Vercel
 .vercel
+.env*
