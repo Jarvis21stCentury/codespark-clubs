@@ -172,9 +172,9 @@ The PNGs are the two source frames with the
 studio background matted out (Vision subject mask, eroded ~1px and feathered so
 the dark background leaves no fringe). Both were matted with the *exterior's*
 mask — only the face region differs between the frames, so the silhouettes
-match. The `.jpg` originals are still there and still used by the kit cards and
-by the standalone component in the working folder, which is framed and wants
-its black ground.
+match. The unmatted `.jpg` originals live with the standalone component in
+`robot-reveal/assets/`, which is framed and wants its black ground; they were
+duplicated here and the duplicates have been removed.
 
 ## Photography
 
