@@ -32,12 +32,16 @@ vercel --prod
 
 ```
 index.html              the homepage
+lite.html               the light version — same content, zero animation
 assets/css/site.css     design system + all layout
+assets/css/lite.css     the light version's styles, standalone
 assets/css/robot-reveal.css
 assets/js/site.js       the motion system (documented at the top of the file)
 assets/js/robot-reveal.js
-assets/img/             robot pair (.png cutouts, .jpg originals) + 24 Pexels photos
-api/request.mjs         serverless endpoint behind the request form (see below)
+assets/img/             robot pair + Pexels photos, each with a lite- variant
+api/request.mjs         serverless endpoint behind the request form
+vercel.json             cache headers for static assets
+package.json            one dependency, nodemailer, for the endpoint
 ```
 
 The standalone `robot-reveal/` component and the original `robot-reveal.zip`
@@ -210,6 +214,67 @@ retina) and keep the cutouts as WebP. The robot pair went 2.8MB → 134KB with
 the alpha mask intact. Everything together went 6.7MB → 2.0MB. Every `<img>`
 also carries `decoding="async"` so decode stays off the main thread.
 
+## The light version
+
+`lite.html` is the same content with none of the machinery — no GSAP,
+ScrollTrigger, Lenis or SplitType, no canvas, no custom cursor, no smooth
+scroll, no pinned or scrubbed sections, no parallax. Nothing animates at all:
+no transitions, no keyframes, no smooth anchor scrolling. The browser paints
+once and then rests.
+
+Measured over the same five-second scroll: **68ms** of main-thread work against
+**876ms** for the full site. 601KB against 2072KB, and zero external scripts
+against four. Images are `lite-` variants at 640px and lower quality; the body
+and label faces are whatever the machine already has, leaving one webfont
+request for the display face.
+
+### How someone ends up there
+
+Three ways, in `assets/js/site.js`:
+
+1. **They choose it** — a footer link, or the banner. The choice is stored in
+   `localStorage` under `cs-view` and an inline script in `<head>` acts on it
+   *before* any library is requested, so a returning visitor never downloads
+   the heavy page again.
+2. **Hardware hints suggest it** (`liteOffer`) — low core count, low memory, or
+   Save-Data. These only ever produce an *offer*, because specs are a poor
+   proxy: a four-core laptop may run this perfectly well. A missing hint is
+   never treated as weak.
+3. **Measured frame rate proves it** (`autoLite`) — the page samples its own
+   frame times for four seconds after the entrance animations settle, and if
+   the median frame is slower than `BAD_MS` (40ms, about 25fps) it switches on
+   its own and says so on arrival.
+
+`?full=1` overrides all of it permanently, so nobody can be trapped.
+
+Two traps if you change `autoLite`. The sample floor must stay tiny — frames
+are the thing a slow machine cannot produce, so a high minimum bails out
+exactly when it should act. And `BAD_MS` must stay above 33ms, because a
+laptop on battery or a 30Hz panel legitimately reports 33.3ms and should not
+be exiled for it.
+
+## Caching
+
+`vercel.json` sets `Cache-Control` on static assets. Without it Vercel serves
+everything as `max-age=0, must-revalidate`, so returning visitors re-check
+every file on every view.
+
+| Path | Policy |
+|---|---|
+| `/assets/img/**` | 30 days, background refresh |
+| `/assets/css/**`, `/assets/js/**` | 1 hour + a week of `stale-while-revalidate` |
+| `/api/**` | `no-store` |
+| HTML | left revalidating, so content changes are never delayed |
+
+Images get 30 days rather than the usual year-with-`immutable` on purpose:
+these filenames are not content-hashed, so anyone swapping a photo in place
+would strand returning visitors on the old one until it expired. **If you
+replace an image, give it a new filename.**
+
+Compression needs no configuration — Vercel already serves brotli on every
+text asset (66-75% smaller). Audit tools that flag "compress components with
+gzip" are counting the JPEGs and WebPs, which are compressed formats already.
+
 ## The robot
 
 `robot-exterior.webp` and `robot-interior.webp` are what the page actually
@@ -263,6 +328,14 @@ Gmail needs no domain, sends from the club's real address, and its ~500
 messages/day limit is far above anything a club request form will do. If
 CodeSpark ever buys a domain, moving back to an email API is worth doing for
 deliverability — but nothing is blocked on it.
+
+### Closing the form
+
+`REQUESTS_PAUSED` at the top of `api/request.mjs` is a kill switch. Set it to
+`true` and the endpoint refuses every submission and sends no mail, regardless
+of what the pages show — so a direct POST cannot get past it either. To close
+the form in the interface as well, add `disabled` to the controls in both
+`index.html` and `lite.html`.
 
 ### Configuration
 
