@@ -227,43 +227,44 @@
       <p class="lede">Tell us what you need. We'll send your club materials within 24 hours.</p>
 
       <form class="form" id="requestForm" style="margin-top:2rem">
-        <p class="note paused">Requests are paused right now. Email <a href="mailto:clubs.codespark@gmail.com">clubs.codespark@gmail.com</a> and we'll help you directly.</p>
+
         <div class="form__row">
           <div class="field">
             <label for="f-name">Your name</label>
-            <input id="f-name" name="name" type="text" required autocomplete="name" disabled />
+            <input id="f-name" name="name" type="text" required autocomplete="name" />
           </div>
           <div class="field">
             <label for="f-email">Email</label>
-            <input id="f-email" name="email" type="email" required autocomplete="email" disabled />
+            <input id="f-email" name="email" type="email" required autocomplete="email" />
           </div>
         </div>
         <div class="form__row">
           <div class="field">
             <label for="f-school">School</label>
-            <input id="f-school" name="school" type="text" required disabled />
+            <input id="f-school" name="school" type="text" required />
           </div>
           <div class="field">
             <label for="f-students">Students in your club</label>
             <input id="f-students" name="students" type="number" min="1" max="10000"
-                   inputmode="numeric" placeholder="How many you expect" required disabled />
+                   inputmode="numeric" placeholder="How many you expect" required />
           </div>
         </div>
         <div class="field">
           <label for="f-need">What do you need?</label>
-          <select id="f-need" name="need" disabled>
+          <select id="f-need" name="need">
             <option>The full starter kit</option>
             <option>Help joining the network</option>
           </select>
         </div>
         <div class="field">
           <label for="f-notes">Anything else</label>
-          <textarea id="f-notes" name="notes" rows="3" disabled></textarea>
+          <textarea id="f-notes" name="notes" rows="3"></textarea>
         </div>
         <div>
-          <button class="btn btn--solid" type="submit" disabled>Send request</button>
+          <button class="btn btn--solid" type="submit">Send request</button>
         </div>
         <p class="status" id="formStatus" role="status"></p>
+        <p class="note">Materials arrive within 24 hours</p>
 
       </form>
 

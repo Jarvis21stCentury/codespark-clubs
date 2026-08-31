@@ -966,14 +966,6 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      // Requests are paused. The controls are disabled in the markup so this
-      // should never fire; this is the belt to that pair of braces. Delete
-      // both to reopen the form.
-      if (form.querySelector('[disabled]')) {
-        if (status) status.textContent = 'Requests are paused — please email us';
-        return;
-      }
-
       var d = new FormData(form);
 
       if (!window.fetch || location.protocol === 'file:') { mailtoFallback(d); return; }

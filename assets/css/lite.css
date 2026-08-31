@@ -397,25 +397,3 @@ footer { border-top: 1px solid var(--edge-soft); padding: clamp(2.5rem, 5vw, 4re
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
-
-
-/* ---------- requests paused (temporary) ---------- */
-.note.paused {
-  text-transform: none;
-  letter-spacing: 0.04em;
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: var(--steel);
-  padding: 0.9rem 1.05rem;
-  background: var(--carbon);
-  border-left: 2px solid var(--ember);
-}
-.note.paused a { color: var(--trim); }
-.form :disabled { opacity: 0.45; cursor: not-allowed; }
-
-.bar--auto {
-  background: #241610;
-  border-bottom-color: #4a2717;
-  color: var(--paper);
-}
-.bar--auto a { color: var(--ember-hi); }

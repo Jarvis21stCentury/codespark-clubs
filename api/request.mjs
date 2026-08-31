@@ -23,12 +23,9 @@
 
 import nodemailer from 'nodemailer';
 
-// ---------------------------------------------------------------------------
-// REQUESTS ARE PAUSED. Nothing is accepted and no mail is sent while this is
-// true. Set it to false to turn the form back on — that is the only change
-// needed here; the front end reads the same state from its own flag.
-// ---------------------------------------------------------------------------
-const REQUESTS_PAUSED = true;
+// Kill switch. Set to true to close the form: the endpoint then refuses every
+// submission and sends no mail, whatever the pages are showing.
+const REQUESTS_PAUSED = false;
 
 // Two SMTP round-trips run about four seconds, and Gmail is occasionally
 // slower. The platform default would cut that off mid-send.
