@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CodeSpark Clubs — AI &amp; computer science clubs for high schools</title>
-<meta name="description" content="Everything you need to start and run an AI and computer science club at your school. Curriculum, activities, promo materials and a network of clubs in seven countries. No experience required." />
+<meta name="description" content="Everything you need to start and run an AI and computer science club at your school. Curriculum, activities, promo materials and a network of 130+ schools across eight countries. No experience required." />
 <meta name="theme-color" content="#0b0c0d" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0c0d'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23c3c9d1' stroke-width='6'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=Instrument+Sans:wght@400..600&family=Martian+Mono:wdth,wght@75..112.5,400..600&display=swap" rel="stylesheet" />
 <!-- Set before first paint: every hidden-for-animation state is gated on
      html.js, so a no-JS visitor gets the full page and no preloader. -->
 <script>document.documentElement.classList.add("js");</script>
@@ -67,10 +67,10 @@
         <!-- The signature: scroll opens the machine, the cursor steers where. -->
         <div class="robot-reveal robot-reveal--cutout" id="heroReveal">
           <img class="robot-reveal__img robot-reveal__img--base"
-               src="assets/img/robot-exterior.png"
-               alt="A humanoid robot with a sealed black face panel" />
+               src="assets/img/robot-exterior.webp" fetchpriority="high" width="1024" height="1024"
+               alt="A humanoid robot with a sealed black face panel" decoding="async" />
           <img class="robot-reveal__img robot-reveal__img--hover"
-               src="assets/img/robot-interior.png" alt="" aria-hidden="true" />
+               src="assets/img/robot-interior.webp" width="1024" height="1024" alt="" aria-hidden="true" decoding="async" />
         </div>
       </div>
 
@@ -93,12 +93,16 @@
 
       <dl class="hero__meta">
         <div>
-          <dt>Delivery</dt>
-          <dd>Within 24 hours</dd>
+          <dt>Schools</dt>
+          <dd>130+</dd>
         </div>
         <div>
-          <dt>Reach</dt>
-          <dd>7 countries</dd>
+          <dt>Students</dt>
+          <dd>2,700+</dd>
+        </div>
+        <div>
+          <dt>Countries</dt>
+          <dd>8</dd>
         </div>
         <div>
           <dt>Cost to your club</dt>
@@ -136,8 +140,8 @@
           </p>
           <p>
             CodeSpark hands you that part finished. The curriculum, the posters,
-            the first meetings planned out, and a network of clubs in seven
-            countries running the same material.
+            the first meetings planned out, and a network of 130+ schools
+            across eight countries running the same material.
           </p>
           <p class="manifesto__sig">Creating the next generation of technology leaders</p>
         </div>
@@ -149,22 +153,20 @@
   <section class="section stats">
     <div class="section__inner">
       <p class="eyebrow" data-reveal>By the numbers</p>
-      <!-- Every figure here is one CodeSpark already publishes. Swap in school
-           and student counts once you have real ones (see README). -->
       <div class="stats__grid">
         <div class="stat">
-          <span class="stat__num" data-skew data-count="7">0</span>
-          <span class="stat__label">Countries reached</span>
+          <span class="stat__num" data-skew data-count="130" data-plus>0</span>
+          <span class="stat__label">Schools running it</span>
           <i class="stat__line"></i>
         </div>
         <div class="stat">
-          <span class="stat__num" data-skew data-count="24" data-suffix="hr">0</span>
-          <span class="stat__label">To materials in your inbox</span>
+          <span class="stat__num" data-skew data-count="2700" data-group data-plus>0</span>
+          <span class="stat__label">Students reached</span>
           <i class="stat__line"></i>
         </div>
         <div class="stat">
-          <span class="stat__num" data-skew data-count="2025">0</span>
-          <span class="stat__label">Founded by students</span>
+          <span class="stat__num" data-skew data-count="8">0</span>
+          <span class="stat__label">Countries</span>
           <i class="stat__line"></i>
         </div>
         <div class="stat">
@@ -186,35 +188,35 @@
 
       <div class="gallery__grid">
         <figure class="shot shot--a">
-          <img src="assets/img/px-8199134.jpg" alt="Students seated in a tiered lecture room" loading="lazy" />
+          <img src="assets/img/px-8199134.jpg" alt="Students seated in a tiered lecture room" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Meeting 01 · Kickoff</figcaption>
         </figure>
         <figure class="shot shot--b">
-          <img src="assets/img/px-9242887.jpg" alt="Hands wiring a microcontroller on a breadboard" loading="lazy" />
+          <img src="assets/img/px-9242887.jpg" alt="Hands wiring a microcontroller on a breadboard" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Module 03 · Hardware lab</figcaption>
         </figure>
         <figure class="shot shot--c">
-          <img src="assets/img/px-7688549.jpg" alt="A robotic hand lit in neon" loading="lazy" />
+          <img src="assets/img/px-7688549.jpg" alt="A robotic hand lit in neon" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Build week · Robotics</figcaption>
         </figure>
         <figure class="shot shot--d">
-          <img src="assets/img/px-3183179.jpg" alt="Two people working over a laptop and notebook" loading="lazy" />
+          <img src="assets/img/px-3183179.jpg" alt="Two people working over a laptop and notebook" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Pair session · Python</figcaption>
         </figure>
         <figure class="shot shot--e">
-          <img src="assets/img/px-5940844.jpg" alt="A study group around a table in a library" loading="lazy" />
+          <img src="assets/img/px-5940844.jpg" alt="A study group around a table in a library" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Officer meeting</figcaption>
         </figure>
         <figure class="shot shot--f">
-          <img src="assets/img/px-8386437.jpg" alt="A glowing network of connected nodes" loading="lazy" />
+          <img src="assets/img/px-8386437.jpg" alt="A glowing network of connected nodes" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Module 02 · Neural nets</figcaption>
         </figure>
         <figure class="shot shot--g">
-          <img src="assets/img/px-8204317.jpg" alt="Two people at desktop workstations" loading="lazy" />
+          <img src="assets/img/px-8204317.jpg" alt="Two people at desktop workstations" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Module 04 · Web builds</figcaption>
         </figure>
         <figure class="shot shot--h">
-          <img src="assets/img/px-8471830.jpg" alt="A young student writing equations on a chalkboard" loading="lazy" />
+          <img src="assets/img/px-8471830.jpg" alt="A young student writing equations on a chalkboard" loading="lazy" decoding="async" />
           <figcaption class="shot__tag">Demo day</figcaption>
         </figure>
       </div>
@@ -225,7 +227,7 @@
   <section class="section split">
     <div class="split__grid">
       <article class="door">
-        <div class="door__bg"><img src="assets/img/px-256502.jpg" alt="" loading="lazy" /></div>
+        <div class="door__bg"><img src="assets/img/px-256502.jpg" alt="" loading="lazy" decoding="async" /></div>
         <h2 class="display door__title" data-split-chars>The kit</h2>
         <p class="door__copy">
           Beginner tutorials through to full AI projects, plus the posters and
@@ -235,10 +237,10 @@
       </article>
 
       <article class="door">
-        <div class="door__bg"><img src="assets/img/px-8617888.jpg" alt="" loading="lazy" /></div>
+        <div class="door__bg"><img src="assets/img/px-8617888.jpg" alt="" loading="lazy" decoding="async" /></div>
         <h2 class="display door__title" data-split-chars>The network</h2>
         <p class="door__copy">
-          Clubs in seven countries running the same material. Trade project
+          Clubs in eight countries running the same material. Trade project
           ideas, compare what worked, ask the people who already did it.
         </p>
         <a class="door__go" href="#request"><i></i> Join it</a>
@@ -257,8 +259,8 @@
           <div class="module__frame">
             <span class="module__idx">01</span>
             <div class="robot-reveal" data-module-reveal>
-              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-256502.jpg" alt="A code editor on a dark screen" loading="lazy" />
-              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-4189446.jpg" alt="" aria-hidden="true" loading="lazy" />
+              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-256502.jpg" alt="A code editor on a dark screen" loading="lazy" decoding="async" />
+              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-4189446.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="module__body">
@@ -271,8 +273,8 @@
           <div class="module__frame">
             <span class="module__idx">02</span>
             <div class="robot-reveal" data-module-reveal>
-              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-8386437.jpg" alt="A glowing node network" loading="lazy" />
-              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-37685036.jpg" alt="" aria-hidden="true" loading="lazy" />
+              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-8386437.jpg" alt="A glowing node network" loading="lazy" decoding="async" />
+              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-37685036.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="module__body">
@@ -285,8 +287,8 @@
           <div class="module__frame">
             <span class="module__idx">03</span>
             <div class="robot-reveal" data-module-reveal>
-              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-6755078.jpg" alt="A circuit board close up" loading="lazy" />
-              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-9242887.jpg" alt="" aria-hidden="true" loading="lazy" />
+              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-6755078.jpg" alt="A circuit board close up" loading="lazy" decoding="async" />
+              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-9242887.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="module__body">
@@ -299,8 +301,8 @@
           <div class="module__frame">
             <span class="module__idx">04</span>
             <div class="robot-reveal" data-module-reveal>
-              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-7988086.jpg" alt="Code on a monitor beside a keyboard" loading="lazy" />
-              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-6804068.jpg" alt="" aria-hidden="true" loading="lazy" />
+              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-7988086.jpg" alt="Code on a monitor beside a keyboard" loading="lazy" decoding="async" />
+              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-6804068.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="module__body">
@@ -313,8 +315,8 @@
           <div class="module__frame">
             <span class="module__idx">05</span>
             <div class="robot-reveal" data-module-reveal>
-              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-38482453.jpg" alt="The words cyber security on a wall" loading="lazy" />
-              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-16380906.jpg" alt="" aria-hidden="true" loading="lazy" />
+              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-38482453.jpg" alt="The words cyber security on a wall" loading="lazy" decoding="async" />
+              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-16380906.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="module__body">
@@ -327,8 +329,8 @@
           <div class="module__frame">
             <span class="module__idx">06</span>
             <div class="robot-reveal" data-module-reveal>
-              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-30547567.jpg" alt="An abstract circuit pattern" loading="lazy" />
-              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-33415745.jpg" alt="" aria-hidden="true" loading="lazy" />
+              <img class="robot-reveal__img robot-reveal__img--base" src="assets/img/px-30547567.jpg" alt="An abstract circuit pattern" loading="lazy" decoding="async" />
+              <img class="robot-reveal__img robot-reveal__img--hover" src="assets/img/px-33415745.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="module__body">
@@ -392,7 +394,7 @@
             </p>
             <p>
               It began as help for one AI club. It's now an online platform with
-              starter kits, guides and coding projects running in seven countries.
+              starter kits, guides and coding projects running in eight countries.
             </p>
           </div>
         </div>
@@ -402,7 +404,7 @@
           <li><span class="timeline__k">Next</span><p class="timeline__v"><b>An online platform</b> with starter kits, guides and coding projects.</p></li>
           <li><span class="timeline__k">Then</span><p class="timeline__v"><b>Multiple schools</b> running the same curriculum.</p></li>
           <li><span class="timeline__k">Then</span><p class="timeline__v"><b>Partnership tools</b> so clubs could work together.</p></li>
-          <li><span class="timeline__k">Now</span><p class="timeline__v"><b>Seven countries</b> and counting.</p></li>
+          <li><span class="timeline__k">Now</span><p class="timeline__v"><b>Eight countries</b>, 130+ schools, 2,700+ students.</p></li>
         </ol>
       </div>
 
@@ -428,7 +430,7 @@
 
   <!-- ============ CTA / request ============ -->
   <section class="section cta" id="request">
-    <div class="cta__bg"><img src="assets/img/px-17489163.jpg" alt="" loading="lazy" /></div>
+    <div class="cta__bg"><img src="assets/img/px-17489163.jpg" alt="" loading="lazy" decoding="async" /></div>
     <div class="section__inner">
       <div class="cta__grid">
         <div>
@@ -453,16 +455,21 @@
               <input id="f-email" name="email" type="email" required autocomplete="email" />
             </div>
           </div>
-          <div class="field">
-            <label for="f-school">School</label>
-            <input id="f-school" name="school" type="text" required />
+          <div class="field__row">
+            <div class="field">
+              <label for="f-school">School</label>
+              <input id="f-school" name="school" type="text" required />
+            </div>
+            <div class="field">
+              <label for="f-students">Students in your club</label>
+              <input id="f-students" name="students" type="number" min="1" max="10000"
+                     inputmode="numeric" placeholder="How many you expect" required />
+            </div>
           </div>
           <div class="field">
             <label for="f-need">What do you need?</label>
             <select id="f-need" name="need">
               <option>The full starter kit</option>
-              <option>Curriculum &amp; activities only</option>
-              <option>Promo materials only</option>
               <option>Help joining the network</option>
             </select>
           </div>
@@ -513,7 +520,6 @@
       </div>
     </div>
     <div class="footer__base">
-      <span class="mono">© 2025 CodeSpark Clubs™. All rights reserved.</span>
       <span class="mono">Photography via Pexels</span>
     </div>
   </div>

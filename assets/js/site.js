@@ -23,6 +23,9 @@
     10  Aperture Card    kit modules reuse the hero's reveal at card scale
     11  Rolodex Steps    the 4 steps run sideways on vertical scroll
     12  Aperture Cursor  ring with inertia, dilates over reveal surfaces
+    23  Drift Plates     every photograph rides slower than its frame
+    24  Idle Respiration the machine breathes when the page is still
+    25  Current Run      a charge travels the length of every section rule
 
    Section transitions - one boundary, one mechanic, never repeated
     13  Shutter Band     hero -> marquee, opens from its own centre line
@@ -55,7 +58,13 @@
   var hasST = hasGSAP && typeof window.ScrollTrigger !== 'undefined';
   var hasSplit = typeof window.SplitType !== 'undefined';
 
-  if (hasST) gsap.registerPlugin(ScrollTrigger);
+  if (hasST) {
+    gsap.registerPlugin(ScrollTrigger);
+    // On phones the URL bar sliding in and out fires a resize, which makes
+    // ScrollTrigger recalculate every trigger mid-scroll and the page jump.
+    // The viewport height has not really changed, so ignore it.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
 
   // One shared scroll-velocity value. The skew, the canvas and the rail
   // head all read this, so the page reacts to the user as one organism
@@ -81,8 +90,10 @@
   safe('lenis', function () {
     if (REDUCED || typeof window.Lenis === 'undefined' || !hasGSAP) return;
     lenis = new Lenis({
-      duration: 1.25,               // eased, but still deliberate
-      easing: function (t) { return 1 - Math.pow(1 - t, 3); }
+      lerp: 0.12,                   // tracks the wheel instead of coasting past it
+      wheelMultiplier: 1,
+      syncTouch: false,             // native momentum on touch; smoothing there feels laggy
+      touchInertiaMultiplier: 12
     });
     lenis.on('scroll', function (e) {
       if (hasST) ScrollTrigger.update();
@@ -463,10 +474,16 @@
       var end = parseFloat(el.getAttribute('data-count'));
       var prefix = el.getAttribute('data-prefix') || '';
       var suffix = el.getAttribute('data-suffix') || '';
+      var group = el.hasAttribute('data-group');
+      var plus = el.hasAttribute('data-plus');
       var line = el.parentNode.querySelector('.stat__line');
 
       function write(v) {
-        el.innerHTML = prefix + Math.round(v) + (suffix ? '<sup>' + suffix + '</sup>' : '');
+        var n = Math.round(v);
+        var body = group ? n.toLocaleString('en-US') : String(n);
+        el.innerHTML = prefix + body +
+          (plus ? '<b class="stat__plus">+</b>' : '') +
+          (suffix ? '<sup>' + suffix + '</sup>' : '');
       }
 
       if (REDUCED || !hasST) { write(end); if (line) gsap.set(line, { scaleX: 1 }); return; }
@@ -855,6 +872,54 @@
     });
   }
 
+  /* ---------- 23 + 24. ambient life ----------
+     Everything above this point is a transition INTO something: it fires
+     once at a boundary and then the section holds perfectly still. A page
+     built only of those reads as static no matter how many of them there
+     are. These two never stop. */
+
+  function ambient() {
+    if (!hasGSAP || REDUCED) return;
+
+    // 23. Drift Plates - each photograph rides slower than the frame that
+    // holds it, so the page reads as an assembly with depth rather than a
+    // printed sheet. Three depths in rotation, so no two neighbours track
+    // together and the grid never looks like one sheet sliding.
+    if (hasST) {
+      document.querySelectorAll('.shot img, .door__bg img').forEach(function (img, i) {
+        var depth = 4.5 + (i % 3) * 2.25;
+        gsap.fromTo(img,
+          { yPercent: -depth },
+          {
+            yPercent: depth,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: img.closest('.shot, .door') || img,
+              start: 'top bottom',
+              end: 'bottom top',
+              // welded to the scroll, not smoothed: a lagging plate reads as
+              // the image sliding around loose inside its frame.
+              scrub: true
+            }
+          });
+      });
+    }
+
+    // 24. Idle Respiration - a powered machine at idle is never perfectly
+    // still. The hero pin drives .hero__figure, so this breathes the layer
+    // inside it and the two transforms compose instead of fighting.
+    var machine = document.getElementById('heroReveal');
+    if (machine && !COARSE) {
+      gsap.to(machine, {
+        y: -9,
+        duration: d(2.6),
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+    }
+  }
+
   /* ---------- nav + form ---------- */
 
   function chrome() {
@@ -869,15 +934,19 @@
     var status = document.getElementById('formStatus');
     if (!form) return;
 
-    // No backend on a static host, so the request is composed as a mail
-    // draft to the address CodeSpark already publishes.
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var d = new FormData(form);
+    var submit = form.querySelector('button[type="submit"]');
+
+    // Posts to the serverless endpoint, which files the submission in the
+    // CodeSpark inbox and sends the requester their confirmation. If that
+    // endpoint is unreachable or unconfigured — a local file:// preview, a
+    // missing API key — we fall back to the mail draft rather than dropping
+    // someone's request on the floor.
+    function mailtoFallback(d) {
       var body = [
         'Name: ' + (d.get('name') || ''),
         'School: ' + (d.get('school') || ''),
         'Email: ' + (d.get('email') || ''),
+        'Students expected: ' + (d.get('students') || ''),
         'Needs: ' + (d.get('need') || ''),
         '',
         (d.get('notes') || '')
@@ -887,6 +956,38 @@
       window.location.href = 'mailto:clubs.codespark@gmail.com' +
         '?subject=' + encodeURIComponent('Club materials request — ' + (d.get('school') || '')) +
         '&body=' + encodeURIComponent(body);
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var d = new FormData(form);
+
+      if (!window.fetch || location.protocol === 'file:') { mailtoFallback(d); return; }
+
+      var payload = {};
+      d.forEach(function (v, k) { payload[k] = String(v); });
+
+      if (submit) submit.disabled = true;
+      if (status) status.textContent = 'Sending…';
+
+      fetch('/api/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      }).then(function () {
+        form.reset();
+        if (status) {
+          status.textContent = 'Sent — check your inbox for confirmation';
+          status.classList.add('is-ok');
+        }
+        if (submit) submit.disabled = false;
+      }).catch(function () {
+        if (submit) submit.disabled = false;
+        mailtoFallback(d);
+      });
     });
   }
 
@@ -905,6 +1006,7 @@
     safe('cursor', apertureCursor);
     safe('magnetics', magnetics);
     safe('flowLayer', flowLayer);
+    safe('ambient', ambient);
     safe('chrome', chrome);
 
     // Hero entrance, choreographed as one gesture rather than a set of
