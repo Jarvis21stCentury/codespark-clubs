@@ -84,7 +84,7 @@ specular highlight.
 | Accent | brushed aluminium trim, `#eef0f3` → `#c3c9d1` → `#79808a`. The only material on the page that shines |
 | Signal | `#d8452a` ember, used like a brake caliper behind a matte wheel: rarely, and small |
 | Finish | a fixed grain sheet plus an edge vignette, both over the whole page |
-| Type | Syne (display), Familjen Grotesk (body), Azeret Mono (labels). Syne is the voice: wide, flat-sided, tiny apertures, drawn more like pressed badge lettering than a UI font — the same register as the matte panels it sits on. Deliberately none of the defaults: not Inter, Space Grotesk, Instrument Sans, Manrope or Archivo. |
+| Type | Clash Display from Fontshare (display), Familjen Grotesk (body), Azeret Mono (labels), the last two from Google Fonts. Clash carries the wordmark: broad, confident, tight apertures, with enough weight in the strokes to hold the brushed-metal gradient instead of letting it wash out. Deliberately none of the defaults: not Inter, Space Grotesk, Instrument Sans, Manrope or Archivo. |
 | Motif | the aperture: a circle that opens onto what's inside |
 
 Photography is graded to match — 88% grayscale, contrast up, brightness
@@ -149,13 +149,31 @@ full (nothing is hidden in CSS that only JavaScript can bring back).
 
 ### Changing the display face
 
-Every display heading size is tuned to Syne's width. Syne sets ~18% wider than
-a normal grotesque at the same size, so the `clamp()` maxima on `.cta__title`,
-`.gallery__title`, `.door__title`, `.story__title` and `.how__title` were all
-scaled down to match. Swap the face and those need rescaling by the same ratio,
-or "SCHOOL" breaks mid-word in the CTA — which is exactly how it failed the
-first time. The hero wordmark is exempt: `fitWordmark()` measures and sizes it
-to the stage at runtime, and re-fits on `document.fonts.ready`.
+Display headings are sized to Clash Display's widths. Don't scale them off a
+single measured word — the ratio between two faces changes with the string
+(Clash is narrower than Syne for "CODESPARK" and 7% wider for "STUDENTS"), so
+one word will lie to you. Measure the real headings instead: render each
+`.display` heading across viewport widths and check the widest rendered line
+against its container. The current worst case is `.door__title` at 85% fill
+around 900px; everything else has more room. The hero wordmark is exempt —
+`fitWordmark()` sizes it to the stage at runtime.
+
+### Two typography traps that already bit once
+
+Both produced the same symptom, a word broken mid-way across two lines
+("STUDENT / S"), and neither is visible in the source:
+
+1. **`SplitType` needs `words` in its types list.** With `lines,chars` every
+   character is a bare inline-block and the browser may break *between any two
+   of them*. `lines,words,chars` keeps each word atomic. Nothing animates a
+   word — the wrappers exist purely to stop the break.
+2. **Nothing may measure before the webfonts land.** `start()` is gated behind
+   `whenFontsReady()`, because the wordmark fit, SplitType's line breaks and
+   ScrollTrigger's positions are all only correct against real font metrics.
+   Measuring against the fallback and reflowing afterwards is what broke the
+   heading. The gate has a 2.5s cap so a slow or blocked font CDN can never
+   hold the page — verified by blocking Fontshare outright: the page still
+   renders, falls back to Helvetica Neue and clears its preloader.
 
 ## Performance
 

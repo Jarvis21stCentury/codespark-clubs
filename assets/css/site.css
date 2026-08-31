@@ -41,14 +41,14 @@
   --rail-w: 1px;
 
   /* Typeface logic: nothing off the default startup shelf — no Inter, no
-     Space Grotesk, no Instrument Sans. Syne is the voice: wide, flat-sided,
-     tiny apertures, drawn more like pressed badge lettering than a UI font,
-     which is the same register as the matte panels it sits on. It is already
-     expanded by design, so there is no width axis to push. Familjen Grotesk
+     Space Grotesk, no Instrument Sans. Clash Display is the voice: broad,
+     confident, tight apertures, with enough weight in the strokes to hold the
+     brushed-metal gradient the wordmark is painted with instead of letting it
+     wash out. Familjen Grotesk
      answers it quietly — a Swedish grotesque with enough character in the
      details to belong beside Syne, and plain enough to read a paragraph in.
      Azeret Mono squares off the small technical labels. */
-  --font-display: "Syne", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Clash Display", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Familjen Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
@@ -846,7 +846,7 @@ html.js .boot {
   flex-wrap: wrap;
   margin-bottom: clamp(2.5rem, 6vh, 4rem);
 }
-.gallery__title { font-size: clamp(1.85rem, 5.5vw, 4.65rem); }
+.gallery__title { font-size: clamp(1.85rem, 5.5vw, 5.4rem); }
 .gallery__grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -947,7 +947,7 @@ html.js .boot {
   background: linear-gradient(to top, var(--void), rgba(11,12,13,0.45));
 }
 .door__title {
-  font-size: clamp(1.7rem, 4.65vw, 3.7rem);
+  font-size: clamp(1.7rem, 4.65vw, 4.2rem);
   margin-bottom: 1rem;
 }
 .door__copy { color: var(--steel); max-width: 34ch; margin: 0 0 1.75rem; }
@@ -1067,7 +1067,7 @@ html.js .boot {
   gap: 2rem;
   flex-wrap: wrap;
 }
-.how__title { font-size: clamp(1.6rem, 4.25vw, 3.4rem); }
+.how__title { font-size: clamp(1.6rem, 4.25vw, 4rem); }
 .how__track {
   display: flex;
   align-items: center;
@@ -1147,7 +1147,7 @@ html.js .boot {
   gap: clamp(2rem, 6vw, 6rem);
   align-items: start;
 }
-.story__title { font-size: clamp(1.7rem, 4.65vw, 3.55rem); margin-bottom: 1.75rem; }
+.story__title { font-size: clamp(1.7rem, 4.65vw, 4.4rem); margin-bottom: 1.75rem; }
 .story__copy { color: var(--steel); }
 .story__copy p { margin: 0 0 1.25rem; max-width: 46ch; }
 
@@ -1238,7 +1238,7 @@ html.js .boot {
   gap: clamp(2rem, 6vw, 5rem);
   align-items: start;
 }
-.cta__title { font-size: clamp(1.95rem, 5.95vw, 5.1rem); margin-bottom: 1.5rem; }
+.cta__title { font-size: clamp(1.95rem, 5.95vw, 6.5rem); margin-bottom: 1.5rem; }
 .cta__copy { color: var(--steel); max-width: 40ch; }
 
 .form { display: grid; gap: 1.25rem; }

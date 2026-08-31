@@ -133,7 +133,12 @@
   // slight lean in the direction of travel. Solid-colour headings only.
   function splitChars(el) {
     if (!hasSplit) return null;
-    var s = new SplitType(el, { types: 'lines,chars' });
+    // 'words' matters even though nothing animates a word. Without it every
+    // character is a bare inline-block and the browser may break BETWEEN any
+    // two of them — so a heading re-flowing after the webfont lands splits
+    // mid-word ("STUDENT / S"). The word wrappers keep each word atomic, so a
+    // late reflow moves whole words to the next line the way it should.
+    var s = new SplitType(el, { types: 'lines,words,chars' });
     s.lines.forEach(function (line) {
       line.style.overflow = 'hidden';
       line.style.display = 'block';
@@ -1041,9 +1046,28 @@
     }
   }
 
+  // Every measurement in start() — the wordmark fit, SplitType's line breaks,
+  // ScrollTrigger's positions — is only right against the real webfont
+  // metrics. Measuring against the fallback and reflowing once the face lands
+  // is what pushed a whole word onto its own line mid-heading. So wait for the
+  // faces, but never longer than a beat: a slow or blocked font CDN must not
+  // hold the page hostage.
+  function whenFontsReady(fn) {
+    var fired = false;
+    function go() { if (!fired) { fired = true; fn(); } }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(go, go);
+      setTimeout(go, 2500);
+    } else {
+      go();
+    }
+  }
+
+  function boot() { coldBoot(function () { whenFontsReady(start); }); }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { coldBoot(start); });
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    coldBoot(start);
+    boot();
   }
 })();
