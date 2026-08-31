@@ -7,10 +7,9 @@
    custom cursor, no smooth-scroll, no pinned or scrubbed sections, no
    parallax, no clip-path reveals, no blend modes, no backdrop-filter.
 
-   Nothing here animates on scroll, so there is no per-frame work at all:
-   the browser paints once and then rests. The only motion is a handful of
-   short hover transitions, and those are dropped entirely under
-   prefers-reduced-motion.
+   Nothing here animates, full stop. No scroll animation, no transitions, no
+   smooth scrolling, no keyframes — hover states change instantly. The browser
+   paints once and then rests, so there is no per-frame work at all.
 
    One webfont request, two weights, for the display face only — the body
    and labels use the fonts already on the machine.
@@ -39,8 +38,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* No smooth scrolling: it animates the scroll offset every frame, which is
+   the precise cost this page exists to avoid. Anchors jump instantly. */
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
@@ -202,7 +202,6 @@ p { margin: 0 0 1rem; }
   border: 1px solid var(--edge);
   color: var(--paper);
   background: transparent;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
   cursor: pointer;
 }
 .btn:hover { border-color: var(--trim); background: var(--carbon); }
