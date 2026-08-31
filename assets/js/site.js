@@ -965,6 +965,15 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+
+      // Requests are paused. The controls are disabled in the markup so this
+      // should never fire; this is the belt to that pair of braces. Delete
+      // both to reopen the form.
+      if (form.querySelector('[disabled]')) {
+        if (status) status.textContent = 'Requests are paused — please email us';
+        return;
+      }
+
       var d = new FormData(form);
 
       if (!window.fetch || location.protocol === 'file:') { mailtoFallback(d); return; }
@@ -1000,6 +1009,45 @@
     });
   }
 
+  /* ---------- 26. the escape hatch ----------
+     A weak machine cannot run this page well, and someone on one is unlikely
+     to go hunting in the footer for a light version. Offer it once, quietly,
+     and only when the hardware actually looks unequal to it — then remember
+     the answer either way so nobody is asked twice. */
+
+  function liteOffer() {
+    var chosen;
+    try { chosen = localStorage.getItem('cs-view'); } catch (e) { return; }
+    if (chosen) return;                          // already decided
+
+    // Hardware hints are absent on some browsers; absent is not weak, so a
+    // missing value must never trigger the offer.
+    var cores = navigator.hardwareConcurrency;
+    var mem = navigator.deviceMemory;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var weak = (typeof cores === 'number' && cores <= 4) ||
+               (typeof mem === 'number' && mem <= 4) ||
+               saveData === true;
+    if (!weak) return;
+
+    var bar = document.createElement('div');
+    bar.className = 'lite-offer';
+    bar.setAttribute('role', 'status');
+    bar.innerHTML =
+      '<span>This page runs a lot of animation. There is a lighter version ' +
+      'if this one feels slow.</span>' +
+      '<a class="lite-offer__go" href="/lite.html">Use the light version</a>' +
+      '<button class="lite-offer__no" type="button">No thanks</button>';
+    document.body.appendChild(bar);
+
+    function remember(v) {
+      try { localStorage.setItem('cs-view', v); } catch (e) {}
+      bar.remove();
+    }
+    bar.querySelector('.lite-offer__go').addEventListener('click', function () { remember('lite'); });
+    bar.querySelector('.lite-offer__no').addEventListener('click', function () { remember('full'); });
+  }
+
   /* ---------- boot ---------- */
 
   function start() {
@@ -1017,6 +1065,7 @@
     safe('flowLayer', flowLayer);
     safe('ambient', ambient);
     safe('chrome', chrome);
+    safe('liteOffer', liteOffer);
 
     // Hero entrance, choreographed as one gesture rather than a set of
     // independent fades: the frame opens, the wordmark rises through it.

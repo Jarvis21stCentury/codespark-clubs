@@ -13,7 +13,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Familjen+Grotesk:ital,wght@0,400..600;1,400&family=Martian+Mono:wdth,wght@75..100,400..600&display=swap" rel="stylesheet" />
 <!-- Set before first paint: every hidden-for-animation state is gated on
      html.js, so a no-JS visitor gets the full page and no preloader. -->
-<script>document.documentElement.classList.add("js");</script>
+<script>document.documentElement.classList.add("js");
+// Runs before any library is requested, so someone who chose the light
+// version never pays to download the heavy one. ?full=1 always wins, so the
+// full site stays reachable and this can never trap anybody.
+(function () {
+  try {
+    var p = new URLSearchParams(location.search);
+    if (p.get("full") === "1") { localStorage.setItem("cs-view", "full"); return; }
+    if (localStorage.getItem("cs-view") === "lite") location.replace("/lite.html");
+  } catch (e) {}
+})();</script>
 <link rel="stylesheet" href="assets/css/robot-reveal.css" />
 <link rel="stylesheet" href="assets/css/site.css" />
 </head>
@@ -445,41 +455,45 @@
         </div>
 
         <form class="form" id="requestForm" data-reveal>
+          <p class="form__paused">
+            Requests are paused right now. Email
+            <a href="mailto:clubs.codespark@gmail.com">clubs.codespark@gmail.com</a>
+            and we'll help you directly.
+          </p>
           <div class="field__row">
             <div class="field">
               <label for="f-name">Your name</label>
-              <input id="f-name" name="name" type="text" required autocomplete="name" />
+              <input id="f-name" name="name" type="text" required autocomplete="name" disabled />
             </div>
             <div class="field">
               <label for="f-email">Email</label>
-              <input id="f-email" name="email" type="email" required autocomplete="email" />
+              <input id="f-email" name="email" type="email" required autocomplete="email" disabled />
             </div>
           </div>
           <div class="field__row">
             <div class="field">
               <label for="f-school">School</label>
-              <input id="f-school" name="school" type="text" required />
+              <input id="f-school" name="school" type="text" required disabled />
             </div>
             <div class="field">
               <label for="f-students">Students in your club</label>
               <input id="f-students" name="students" type="number" min="1" max="10000"
-                     inputmode="numeric" placeholder="How many you expect" required />
+                     inputmode="numeric" placeholder="How many you expect" required disabled />
             </div>
           </div>
           <div class="field">
             <label for="f-need">What do you need?</label>
-            <select id="f-need" name="need">
+            <select id="f-need" name="need" disabled>
               <option>The full starter kit</option>
               <option>Help joining the network</option>
             </select>
           </div>
           <div class="field">
             <label for="f-notes">Anything else</label>
-            <textarea id="f-notes" name="notes" rows="3"></textarea>
+            <textarea id="f-notes" name="notes" rows="3" disabled></textarea>
           </div>
-          <button class="btn btn--solid" type="submit" data-magnetic><span data-label="Send request">Send request</span></button>
+          <button class="btn btn--solid" type="submit" data-magnetic disabled><span data-label="Send request">Send request</span></button>
           <p class="form__status" id="formStatus" role="status"></p>
-          <p class="form__note">Materials arrive within 24 hours</p>
         </form>
       </div>
     </div>
@@ -516,6 +530,7 @@
         <ul>
           <li><a href="mailto:clubs.codespark@gmail.com">clubs.codespark@gmail.com</a></li>
           <li><a href="#request">Request materials</a></li>
+          <li><a href="/lite.html" id="liteLink">Light version (no animations)</a></li>
         </ul>
       </div>
     </div>

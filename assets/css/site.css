@@ -1403,3 +1403,66 @@ html.js .boot {
   padding-top: 1.75rem;
 }
 @media (max-width: 880px) { .footer__cols { grid-template-columns: 1fr 1fr; } }
+
+
+/* ---------- the light-version offer ----------
+   Injected by JS only when the hardware looks unequal to the full page, so
+   there is no markup and no cost for everybody else. */
+
+.lite-offer {
+  position: fixed;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 1.25rem;
+  z-index: 60;
+  margin: 0 auto;
+  max-width: 640px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem 1rem;
+  padding: 0.95rem 1.15rem;
+  background: var(--carbon);
+  border: 1px solid var(--edge);
+  color: var(--steel);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.lite-offer span { flex: 1 1 15rem; }
+.lite-offer__go,
+.lite-offer__no {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--edge);
+  background: transparent;
+  color: var(--paper);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lite-offer__go { background: var(--trim); color: var(--void); border-color: var(--trim); font-weight: 600; }
+.lite-offer__no { color: var(--steel-dim); }
+.lite-offer__no:hover { color: var(--paper); }
+
+
+/* ---------- requests paused ----------
+   Temporary. Remove this block, the `disabled` attributes on the form
+   controls in index.html, and REQUESTS_PAUSED in api/request.mjs to reopen. */
+
+.form__paused {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin: 0;
+  padding: 0.9rem 1.05rem;
+  background: var(--carbon);
+  border-left: 2px solid var(--ember);
+}
+.form__paused a { color: var(--trim); }
+.form :disabled { opacity: 0.4; cursor: not-allowed; }

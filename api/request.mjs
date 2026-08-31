@@ -23,6 +23,13 @@
 
 import nodemailer from 'nodemailer';
 
+// ---------------------------------------------------------------------------
+// REQUESTS ARE PAUSED. Nothing is accepted and no mail is sent while this is
+// true. Set it to false to turn the form back on — that is the only change
+// needed here; the front end reads the same state from its own flag.
+// ---------------------------------------------------------------------------
+const REQUESTS_PAUSED = true;
+
 // Two SMTP round-trips run about four seconds, and Gmail is occasionally
 // slower. The platform default would cut that off mid-send.
 export const config = { maxDuration: 30 };
@@ -64,6 +71,15 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Guarded here as well as in the page, so a direct POST cannot get past a
+  // disabled form.
+  if (REQUESTS_PAUSED) {
+    return res.status(503).json({
+      error: 'Requests are paused',
+      message: 'The request form is temporarily closed. Email clubs.codespark@gmail.com.',
+    });
   }
 
   if (!PASS) return res.status(503).json({ error: 'Mail not configured' });
