@@ -57,7 +57,7 @@ generation of technology leaders" line.
 1. **The `$0` stat.** The old site never states a price, but it gives materials
    away through a request form, so the homepage says the club costs nothing to
    run. If that's wrong, edit the fourth `.stat` block in `index.html`.
-2. **The stats row.** 130+ schools, 2,700+ students, 8 countries, $0 — the
+2. **The stats row.** 128+ schools, 2,700+ students, 8 countries, $0 — the
    figures Armaan supplied. Each tile is a `data-count` attribute in
    `index.html`; add `data-plus` for a trailing "+" and `data-group` for a
    thousands separator. The same numbers appear in the hero meta row and in the
