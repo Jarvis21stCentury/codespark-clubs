@@ -11,3 +11,6 @@ robot-reveal/
 
 # Node
 node_modules/
+
+# Screenshots dropped into the project folder
+Screenshot *.png
