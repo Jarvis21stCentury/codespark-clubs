@@ -413,3 +413,10 @@ footer { border-top: 1px solid var(--edge-soft); padding: clamp(2.5rem, 5vw, 4re
 }
 .note.paused a { color: var(--trim); }
 .form :disabled { opacity: 0.45; cursor: not-allowed; }
+
+.bar--auto {
+  background: #241610;
+  border-bottom-color: #4a2717;
+  color: var(--paper);
+}
+.bar--auto a { color: var(--ember-hi); }

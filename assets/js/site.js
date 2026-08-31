@@ -1009,19 +1009,33 @@
     });
   }
 
-  /* ---------- 26. the escape hatch ----------
-     A weak machine cannot run this page well, and someone on one is unlikely
-     to go hunting in the footer for a light version. Offer it once, quietly,
-     and only when the hardware actually looks unequal to it — then remember
-     the answer either way so nobody is asked twice. */
+  /* ---------- 26 + 27. the escape hatch ----------
+     Two separate things, because they warrant different confidence.
+
+     Hardware hints (26) are only a proxy — a four-core laptop may run this
+     perfectly well — so they earn an offer, never a decision.
+
+     Measured frame rate (27) is direct evidence. If this page is genuinely
+     stuttering on the machine in front of it, it switches to the light
+     version on its own. Guards on that, in order: an explicit choice always
+     wins, the sample only starts once the entrance animations are done, it
+     is thrown away if the tab is hidden or backgrounded (rAF throttles there
+     and would read as jank), it needs a few seconds of sustained trouble
+     rather than one bad frame, and the switch is announced and reversible on
+     arrival. ?full=1 overrides the whole mechanism permanently. */
+
+  function stored() {
+    try { return localStorage.getItem('cs-view'); } catch (e) { return 'unknown'; }
+  }
+  function remember(v) {
+    try { localStorage.setItem('cs-view', v); } catch (e) {}
+  }
 
   function liteOffer() {
-    var chosen;
-    try { chosen = localStorage.getItem('cs-view'); } catch (e) { return; }
-    if (chosen) return;                          // already decided
+    if (stored()) return;                        // already decided, or unavailable
 
-    // Hardware hints are absent on some browsers; absent is not weak, so a
-    // missing value must never trigger the offer.
+    // Absent hints are not weak hints — a browser that declines to report
+    // must never trigger this.
     var cores = navigator.hardwareConcurrency;
     var mem = navigator.deviceMemory;
     var saveData = navigator.connection && navigator.connection.saveData;
@@ -1040,12 +1054,69 @@
       '<button class="lite-offer__no" type="button">No thanks</button>';
     document.body.appendChild(bar);
 
-    function remember(v) {
-      try { localStorage.setItem('cs-view', v); } catch (e) {}
-      bar.remove();
-    }
-    bar.querySelector('.lite-offer__go').addEventListener('click', function () { remember('lite'); });
-    bar.querySelector('.lite-offer__no').addEventListener('click', function () { remember('full'); });
+    function close(v) { remember(v); bar.remove(); }
+    bar.querySelector('.lite-offer__go').addEventListener('click', function () { close('lite'); });
+    bar.querySelector('.lite-offer__no').addEventListener('click', function () { close('full'); });
+  }
+
+  // 27. Watch the real frame rate and switch if the machine cannot keep up.
+  function autoLite() {
+    if (REDUCED) return;                 // that path is already cheap
+    if (stored()) return;                // an explicit choice outranks any measurement
+
+    var SETTLE = 2200;   // let the preloader and entrance timelines finish first
+    var WINDOW = 4000;   // then watch for this long
+    // 40ms is ~25fps. Deliberately below that rather than at 33ms, because a
+    // laptop on battery or a 30Hz panel legitimately reports 33.3ms and must
+    // not be exiled for it.
+    var BAD_MS = 40;
+    // Enough frames to have a median at all — and no more. A high floor here
+    // is a trap: the worse the machine, the fewer frames it can produce in
+    // the window, so a large minimum bails out exactly when it should act.
+    var MIN_SAMPLES = 3;
+
+    setTimeout(function () {
+      if (document.visibilityState !== 'visible') return;
+      var samples = [];
+      var last = performance.now();
+      var until = last + WINDOW;
+      var abort = false;
+
+      // A backgrounded tab throttles rAF to a crawl. That is the browser
+      // saving power, not the machine struggling, and reading it as jank
+      // would exile people who simply switched tabs.
+      function onHide() { if (document.visibilityState !== 'visible') abort = true; }
+      document.addEventListener('visibilitychange', onHide);
+
+      function tick(now) {
+        if (abort) { document.removeEventListener('visibilitychange', onHide); return; }
+        samples.push(now - last);
+        last = now;
+        if (now < until) { requestAnimationFrame(tick); return; }
+
+        document.removeEventListener('visibilitychange', onHide);
+
+        // Fewer frames than we can take a median from, across a whole visible
+        // window, is under one frame a second — the worst reading available,
+        // not a reason to abstain.
+        if (samples.length < MIN_SAMPLES) {
+          if (!samples.length) return;           // no data at all: no verdict
+          remember('lite');
+          location.replace('/lite.html?auto=1');
+          return;
+        }
+
+        samples.sort(function (a, b) { return a - b; });
+        var median = samples[Math.floor(samples.length / 2)];
+        if (median <= BAD_MS) return;
+
+        // Sustained trouble. Move, remember it, and say so on arrival so the
+        // switch never looks like a glitch.
+        remember('lite');
+        location.replace('/lite.html?auto=1');
+      }
+      requestAnimationFrame(tick);
+    }, SETTLE);
   }
 
   /* ---------- boot ---------- */
@@ -1066,6 +1137,7 @@
     safe('ambient', ambient);
     safe('chrome', chrome);
     safe('liteOffer', liteOffer);
+    safe('autoLite', autoLite);
 
     // Hero entrance, choreographed as one gesture rather than a set of
     // independent fades: the frame opens, the wordmark rises through it.

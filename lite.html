@@ -20,8 +20,8 @@
 
 <a class="skip" href="#main">Skip to content</a>
 
-<p class="bar">
-  You're on the light version — no animations, smaller images.
+<p class="bar" id="bar">
+  <span id="barText">You're on the light version — no animations, smaller images.</span>
   <a href="/?full=1" id="toFull">Switch to the full site</a>
 </p>
 
@@ -317,6 +317,20 @@
   'use strict';
 
   try { localStorage.setItem('cs-view', 'lite'); } catch (e) {}
+
+  // Arriving with ?auto=1 means the full site measured itself stuttering on
+  // this machine and moved us. Say so plainly — an unexplained switch reads
+  // as the site being broken.
+  try {
+    if (new URLSearchParams(location.search).get('auto') === '1') {
+      var t = document.getElementById('barText');
+      if (t) t.textContent =
+        'The full site was running slowly on this device, so we switched you ' +
+        'to the light version. Same content, no animations.';
+      var b = document.getElementById('bar');
+      if (b) b.classList.add('bar--auto');
+    }
+  } catch (e) {}
 
   var toFull = document.getElementById('toFull');
   if (toFull) {
