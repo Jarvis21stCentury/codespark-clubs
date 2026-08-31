@@ -84,7 +84,7 @@ specular highlight.
 | Accent | brushed aluminium trim, `#eef0f3` → `#c3c9d1` → `#79808a`. The only material on the page that shines |
 | Signal | `#d8452a` ember, used like a brake caliper behind a matte wheel: rarely, and small |
 | Finish | a fixed grain sheet plus an edge vignette, both over the whole page |
-| Type | Clash Display from Fontshare (display), Familjen Grotesk (body), Azeret Mono (labels), the last two from Google Fonts. Clash carries the wordmark: broad, confident, tight apertures, with enough weight in the strokes to hold the brushed-metal gradient instead of letting it wash out. Deliberately none of the defaults: not Inter, Space Grotesk, Instrument Sans, Manrope or Archivo. |
+| Type | Big Shoulders Display (display), Familjen Grotesk (body), Martian Mono run wide (labels) — all Google Fonts, one host. The pairing is built on **contrast**: a tall industrial condensed display against a squat wide technical mono, opposites on every axis, with the body face staying out of the way between them. Deliberately none of the defaults, and deliberately not a fourth bold geometric sans — see below. |
 | Motif | the aperture: a circle that opens onto what's inside |
 
 Photography is graded to match — 88% grayscale, contrast up, brightness
@@ -147,16 +147,37 @@ horizontal steps stacked and no section transitions at all, touch devices skip
 the cursor and pin, and if the CDNs fail the page still renders and reads in
 full (nothing is hidden in CSS that only JavaScript can bring back).
 
-### Changing the display face
+### Why the type is what it is
 
-Display headings are sized to Clash Display's widths. Don't scale them off a
-single measured word — the ratio between two faces changes with the string
-(Clash is narrower than Syne for "CODESPARK" and 7% wider for "STUDENTS"), so
-one word will lie to you. Measure the real headings instead: render each
-`.display` heading across viewport widths and check the widest rendered line
-against its container. The current worst case is `.door__title` at 85% fill
-around 900px; everything else has more room. The hero wordmark is exempt —
-`fitWordmark()` sizes it to the stage at runtime.
+This went through four display faces — Archivo, Syne, Clash Display, and now
+Big Shoulders — and the first three all failed the same way: they were the
+same *category*. A wide bold geometric sans over a neutral sans is the
+templated pairing, so swapping one for another changed nothing. If the type
+ever needs revisiting, change the *relationship* between the faces, not the
+face.
+
+What works here is contrast. The display is tall and condensed; the mono is
+squat and wide; they read as a deliberate pair rather than three variations on
+one idea. Condensed also buys a lot of room — the same word takes far less
+width, which is why the headings run much larger than any previous face
+allowed.
+
+Small display text needs the opposite treatment from large. A condensed face
+loses presence as it shrinks, and the negative tracking that suits a 100px
+heading makes a 16px one look cramped, so `.brand__name`, `.founder__name`,
+`.module__name` and `.step__name` all carry *positive* tracking and a heavier
+weight.
+
+### Sizing headings after a face change
+
+Don't scale off a single measured word — the ratio between two faces changes
+with the string (Clash was narrower than Syne for "CODESPARK" and 7% wider for
+"STUDENTS"), so one word will lie to you. Measure the real headings: render
+each `.display` heading across viewport widths and check the widest rendered
+line against its container. Current worst case is `.door__title` at ~71% fill
+around 900px. The hero wordmark is exempt — `fitWordmark()` sizes it to the
+stage at runtime, so a condensed face simply makes it taller (362px at 1440px
+wide), and its height should be checked against the stage.
 
 ### Two typography traps that already bit once
 

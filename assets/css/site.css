@@ -41,16 +41,25 @@
   --rail-w: 1px;
 
   /* Typeface logic: nothing off the default startup shelf — no Inter, no
-     Space Grotesk, no Instrument Sans. Clash Display is the voice: broad,
-     confident, tight apertures, with enough weight in the strokes to hold the
-     brushed-metal gradient the wordmark is painted with instead of letting it
-     wash out. Familjen Grotesk
-     answers it quietly — a Swedish grotesque with enough character in the
-     details to belong beside Syne, and plain enough to read a paragraph in.
-     Azeret Mono squares off the small technical labels. */
-  --font-display: "Clash Display", "Helvetica Neue", Arial, sans-serif;
+     Space Grotesk, no Instrument Sans — and, after three tries, no fourth
+     flavour of bold geometric sans either. That category was the problem: a
+     wide bold sans over a neutral sans is the templated pairing, and swapping
+     between them changes nothing.
+
+     The pairing here is built on contrast instead. Big Shoulders Display is
+     tall industrial condensed — machine signage, race livery, the lettering
+     stencilled on a chassis — and it holds the brushed-metal gradient across
+     its long vertical strokes. Martian Mono, run wide, is its opposite in
+     every axis: squat where the display is tall, wide where it is narrow,
+     plotted where it is drawn. Familjen Grotesk sits between them and stays
+     out of the way so a paragraph is still a paragraph.
+
+     Condensed also buys headroom: the same word takes far less width, so the
+     headings can run much larger than any of the previous faces allowed. */
+  --font-display: "Big Shoulders Display", "Haettenschweiler", Impact, sans-serif;
   --font-body: "Familjen Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --mono-wide: 100%;
 
   /* One easing family across the whole page — half of what "flow" means. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -109,6 +118,7 @@ button { font: inherit; color: inherit; }
 
 .mono {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.68rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -117,6 +127,7 @@ button { font: inherit; color: inherit; }
 
 .eyebrow {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -203,6 +214,7 @@ html.js .boot {
 .boot__inner { width: min(460px, 100%); }
 .boot__log {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   color: var(--steel-dim);
@@ -213,6 +225,7 @@ html.js .boot {
 .boot__row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .boot__label {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.68rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -340,15 +353,16 @@ html.js .boot {
 }
 .brand__name {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  font-size: 1.12rem;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
 .nav__links { display: flex; gap: 2rem; align-items: center; }
 .nav__link {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -372,6 +386,7 @@ html.js .boot {
 
 .nav__cta {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.66rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -553,6 +568,7 @@ html.js .boot {
 .hero__meta div { min-width: 0; }
 .hero__meta dt {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -596,6 +612,7 @@ html.js .boot {
   align-items: center;
   gap: 0.8rem;
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.7rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -765,6 +782,7 @@ html.js .boot {
 .manifesto__aside p { margin: 0 0 1.2rem; }
 .manifesto__sig {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -817,6 +835,7 @@ html.js .boot {
 }
 .stat__label {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.64rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -846,7 +865,7 @@ html.js .boot {
   flex-wrap: wrap;
   margin-bottom: clamp(2.5rem, 6vh, 4rem);
 }
-.gallery__title { font-size: clamp(1.85rem, 5.5vw, 5.4rem); }
+.gallery__title { font-size: clamp(2.2rem, 7.4vw, 7.6rem); }
 .gallery__grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -879,6 +898,7 @@ html.js .boot {
   left: 0.9rem; bottom: 0.75rem;
   z-index: 2;
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.6rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -947,12 +967,13 @@ html.js .boot {
   background: linear-gradient(to top, var(--void), rgba(11,12,13,0.45));
 }
 .door__title {
-  font-size: clamp(1.7rem, 4.65vw, 4.2rem);
+  font-size: clamp(2.05rem, 6.4vw, 6.2rem);
   margin-bottom: 1rem;
 }
 .door__copy { color: var(--steel); max-width: 34ch; margin: 0 0 1.75rem; }
 .door__go {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1001,6 +1022,7 @@ html.js .boot {
   top: 0.75rem; right: 0.9rem;
   z-index: 5;
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   color: var(--steel-dim);
@@ -1016,14 +1038,15 @@ html.js .boot {
 }
 .module__name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  letter-spacing: 0.015em;
   text-transform: uppercase;
   margin: 0;
 }
 .module__meta {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.6rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1067,7 +1090,7 @@ html.js .boot {
   gap: 2rem;
   flex-wrap: wrap;
 }
-.how__title { font-size: clamp(1.6rem, 4.25vw, 4rem); }
+.how__title { font-size: clamp(1.95rem, 5.9vw, 5.8rem); }
 .how__track {
   display: flex;
   align-items: center;
@@ -1104,9 +1127,9 @@ html.js .boot {
 }
 .step__name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(1.1rem, 2vw, 1.5rem);
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: clamp(1.3rem, 2.4vw, 1.85rem);
+  letter-spacing: 0.015em;
   text-transform: uppercase;
   margin: 0 0 0.85rem;
 }
@@ -1147,7 +1170,7 @@ html.js .boot {
   gap: clamp(2rem, 6vw, 6rem);
   align-items: start;
 }
-.story__title { font-size: clamp(1.7rem, 4.65vw, 4.4rem); margin-bottom: 1.75rem; }
+.story__title { font-size: clamp(2.05rem, 6.6vw, 6.8rem); margin-bottom: 1.75rem; }
 .story__copy { color: var(--steel); }
 .story__copy p { margin: 0 0 1.25rem; max-width: 46ch; }
 
@@ -1163,6 +1186,7 @@ html.js .boot {
 .timeline li:last-child { border-bottom: 1px solid var(--edge-soft); }
 .timeline__k {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.64rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1203,13 +1227,14 @@ html.js .boot {
 }
 .founder__name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.015em;
   margin: 1.5rem 0 0.4rem;
 }
 .founder__role {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1238,13 +1263,14 @@ html.js .boot {
   gap: clamp(2rem, 6vw, 5rem);
   align-items: start;
 }
-.cta__title { font-size: clamp(1.95rem, 5.95vw, 6.5rem); margin-bottom: 1.5rem; }
+.cta__title { font-size: clamp(2.35rem, 8.2vw, 9rem); margin-bottom: 1.5rem; }
 .cta__copy { color: var(--steel); max-width: 40ch; }
 
 .form { display: grid; gap: 1.25rem; }
 .field { display: grid; gap: 0.5rem; }
 .field label {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1272,6 +1298,7 @@ html.js .boot {
 .field__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
 .form__note {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1280,6 +1307,7 @@ html.js .boot {
 }
 .form__status {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.66rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1356,6 +1384,7 @@ html.js .boot {
 .footer__tag { color: var(--steel); max-width: 30ch; margin: 1rem 0 0; }
 .footer h4 {
   font-family: var(--font-mono);
+  font-stretch: var(--mono-wide);
   font-size: 0.62rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
