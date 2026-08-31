@@ -40,17 +40,17 @@
   --gutter: clamp(1.25rem, 5vw, 6rem);
   --rail-w: 1px;
 
-  /* Typeface logic: nothing off the default startup shelf. Archivo is a
-     coachbuilt grotesque — run wide (wdth 118) it reads like the pressed
-     lettering on a bootlid rather than a UI font. Instrument Sans keeps the
-     body plain and slightly narrow so the display face stays the loud one.
-     Martian Mono, pulled to its narrowest width, gives the small technical
-     labels a plotted, instrument-panel feel. */
-  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --wide: 118%;   /* display width axis */
-  --narrow: 78%;  /* mono width axis */
+  /* Typeface logic: nothing off the default startup shelf — no Inter, no
+     Space Grotesk, no Instrument Sans. Syne is the voice: wide, flat-sided,
+     tiny apertures, drawn more like pressed badge lettering than a UI font,
+     which is the same register as the matte panels it sits on. It is already
+     expanded by design, so there is no width axis to push. Familjen Grotesk
+     answers it quietly — a Swedish grotesque with enough character in the
+     details to belong beside Syne, and plain enough to read a paragraph in.
+     Azeret Mono squares off the small technical labels. */
+  --font-display: "Syne", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Familjen Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   /* One easing family across the whole page — half of what "flow" means. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -109,7 +109,6 @@ button { font: inherit; color: inherit; }
 
 .mono {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.68rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -118,7 +117,6 @@ button { font: inherit; color: inherit; }
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -153,7 +151,6 @@ button { font: inherit; color: inherit; }
 
 .display {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 800;
   line-height: 0.88;
   letter-spacing: -0.035em;
@@ -206,7 +203,6 @@ html.js .boot {
 .boot__inner { width: min(460px, 100%); }
 .boot__log {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   color: var(--steel-dim);
@@ -217,7 +213,6 @@ html.js .boot {
 .boot__row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .boot__label {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.68rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -225,7 +220,6 @@ html.js .boot {
 }
 .boot__count {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 700;
   font-size: clamp(2.5rem, 9vw, 4.5rem);
   line-height: 1;
@@ -346,7 +340,6 @@ html.js .boot {
 }
 .brand__name {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 700;
   font-size: 0.9rem;
   letter-spacing: -0.02em;
@@ -356,7 +349,6 @@ html.js .boot {
 .nav__links { display: flex; gap: 2rem; align-items: center; }
 .nav__link {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -380,7 +372,6 @@ html.js .boot {
 
 .nav__cta {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.66rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -562,7 +553,6 @@ html.js .boot {
 .hero__meta div { min-width: 0; }
 .hero__meta dt {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -572,7 +562,6 @@ html.js .boot {
 .hero__meta dd {
   margin: 0;
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 600;
   font-size: 0.9rem;
   letter-spacing: -0.01em;
@@ -607,7 +596,6 @@ html.js .boot {
   align-items: center;
   gap: 0.8rem;
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.7rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -735,7 +723,6 @@ html.js .boot {
 .marquee__track { display: flex; width: max-content; will-change: transform; }
 .marquee__item {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 500;
   font-size: clamp(0.85rem, 1.6vw, 1.15rem);
   letter-spacing: 0.02em;
@@ -760,7 +747,6 @@ html.js .boot {
 .manifesto { background: var(--void); z-index: 1; overflow: hidden; }
 .manifesto__text {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 300;
   font-size: clamp(1.6rem, 4.6vw, 3.6rem);
   line-height: 1.16;
@@ -779,7 +765,6 @@ html.js .boot {
 .manifesto__aside p { margin: 0 0 1.2rem; }
 .manifesto__sig {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -808,7 +793,6 @@ html.js .boot {
 }
 .stat__num {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 700;
   font-size: clamp(2.6rem, 6.5vw, 5rem);
   line-height: 1;
@@ -833,7 +817,6 @@ html.js .boot {
 }
 .stat__label {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.64rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -863,7 +846,7 @@ html.js .boot {
   flex-wrap: wrap;
   margin-bottom: clamp(2.5rem, 6vh, 4rem);
 }
-.gallery__title { font-size: clamp(2.2rem, 6.5vw, 5.5rem); }
+.gallery__title { font-size: clamp(1.85rem, 5.5vw, 4.65rem); }
 .gallery__grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -896,7 +879,6 @@ html.js .boot {
   left: 0.9rem; bottom: 0.75rem;
   z-index: 2;
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.6rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -965,13 +947,12 @@ html.js .boot {
   background: linear-gradient(to top, var(--void), rgba(11,12,13,0.45));
 }
 .door__title {
-  font-size: clamp(2rem, 5.5vw, 4.4rem);
+  font-size: clamp(1.7rem, 4.65vw, 3.7rem);
   margin-bottom: 1rem;
 }
 .door__copy { color: var(--steel); max-width: 34ch; margin: 0 0 1.75rem; }
 .door__go {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1020,7 +1001,6 @@ html.js .boot {
   top: 0.75rem; right: 0.9rem;
   z-index: 5;
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   color: var(--steel-dim);
@@ -1036,7 +1016,6 @@ html.js .boot {
 }
 .module__name {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 600;
   font-size: clamp(0.95rem, 1.4vw, 1.15rem);
   letter-spacing: -0.02em;
@@ -1045,7 +1024,6 @@ html.js .boot {
 }
 .module__meta {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.6rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1089,7 +1067,7 @@ html.js .boot {
   gap: 2rem;
   flex-wrap: wrap;
 }
-.how__title { font-size: clamp(1.9rem, 5vw, 4rem); }
+.how__title { font-size: clamp(1.6rem, 4.25vw, 3.4rem); }
 .how__track {
   display: flex;
   align-items: center;
@@ -1108,7 +1086,6 @@ html.js .boot {
 }
 .step__idx {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 800;
   font-size: clamp(3.5rem, 9vw, 7rem);
   line-height: 0.85;
@@ -1127,7 +1104,6 @@ html.js .boot {
 }
 .step__name {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 600;
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   letter-spacing: -0.02em;
@@ -1171,7 +1147,7 @@ html.js .boot {
   gap: clamp(2rem, 6vw, 6rem);
   align-items: start;
 }
-.story__title { font-size: clamp(2rem, 5.5vw, 4.2rem); margin-bottom: 1.75rem; }
+.story__title { font-size: clamp(1.7rem, 4.65vw, 3.55rem); margin-bottom: 1.75rem; }
 .story__copy { color: var(--steel); }
 .story__copy p { margin: 0 0 1.25rem; max-width: 46ch; }
 
@@ -1187,7 +1163,6 @@ html.js .boot {
 .timeline li:last-child { border-bottom: 1px solid var(--edge-soft); }
 .timeline__k {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.64rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1212,7 +1187,6 @@ html.js .boot {
 }
 .founder__initials {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 800;
   font-size: clamp(3rem, 7vw, 5rem);
   line-height: 0.85;
@@ -1229,7 +1203,6 @@ html.js .boot {
 }
 .founder__name {
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: -0.01em;
@@ -1237,7 +1210,6 @@ html.js .boot {
 }
 .founder__role {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1266,14 +1238,13 @@ html.js .boot {
   gap: clamp(2rem, 6vw, 5rem);
   align-items: start;
 }
-.cta__title { font-size: clamp(2.3rem, 7vw, 6rem); margin-bottom: 1.5rem; }
+.cta__title { font-size: clamp(1.95rem, 5.95vw, 5.1rem); margin-bottom: 1.5rem; }
 .cta__copy { color: var(--steel); max-width: 40ch; }
 
 .form { display: grid; gap: 1.25rem; }
 .field { display: grid; gap: 0.5rem; }
 .field label {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1301,7 +1272,6 @@ html.js .boot {
 .field__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
 .form__note {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1310,7 +1280,6 @@ html.js .boot {
 }
 .form__status {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.66rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1341,7 +1310,6 @@ html.js .boot {
 .footer__word {
   position: relative;
   font-family: var(--font-display);
-  font-stretch: var(--wide);
   font-weight: 800;
   font-size: clamp(2.2rem, 10vw, 8.5rem);
   line-height: 0.82;
@@ -1388,7 +1356,6 @@ html.js .boot {
 .footer__tag { color: var(--steel); max-width: 30ch; margin: 1rem 0 0; }
 .footer h4 {
   font-family: var(--font-mono);
-  font-stretch: var(--narrow);
   font-size: 0.62rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;

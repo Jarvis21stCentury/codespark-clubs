@@ -84,7 +84,7 @@ specular highlight.
 | Accent | brushed aluminium trim, `#eef0f3` → `#c3c9d1` → `#79808a`. The only material on the page that shines |
 | Signal | `#d8452a` ember, used like a brake caliper behind a matte wheel: rarely, and small |
 | Finish | a fixed grain sheet plus an edge vignette, both over the whole page |
-| Type | Archivo at width 118 (display), Instrument Sans (body), Martian Mono at width 78 (labels). Deliberately not Inter/Space Grotesk/Unbounded — the width axes are what keep it off the default startup shelf. The two axis values live in `--wide` and `--narrow`. |
+| Type | Syne (display), Familjen Grotesk (body), Azeret Mono (labels). Syne is the voice: wide, flat-sided, tiny apertures, drawn more like pressed badge lettering than a UI font — the same register as the matte panels it sits on. Deliberately none of the defaults: not Inter, Space Grotesk, Instrument Sans, Manrope or Archivo. |
 | Motif | the aperture: a circle that opens onto what's inside |
 
 Photography is graded to match — 88% grayscale, contrast up, brightness
@@ -146,6 +146,16 @@ Everything degrades: `prefers-reduced-motion` gets a full static page with the
 horizontal steps stacked and no section transitions at all, touch devices skip
 the cursor and pin, and if the CDNs fail the page still renders and reads in
 full (nothing is hidden in CSS that only JavaScript can bring back).
+
+### Changing the display face
+
+Every display heading size is tuned to Syne's width. Syne sets ~18% wider than
+a normal grotesque at the same size, so the `clamp()` maxima on `.cta__title`,
+`.gallery__title`, `.door__title`, `.story__title` and `.how__title` were all
+scaled down to match. Swap the face and those need rescaling by the same ratio,
+or "SCHOOL" breaks mid-word in the CTA — which is exactly how it failed the
+first time. The hero wordmark is exempt: `fitWordmark()` measures and sizes it
+to the stage at runtime, and re-fits on `document.fonts.ready`.
 
 ## Performance
 
