@@ -188,10 +188,18 @@ licence, no attribution required. Filenames keep the Pexels photo ID
 `api/request.mjs` runs on every submission and sends two emails through
 [Resend](https://resend.com):
 
-1. **The submission**, to `clubs.codespark@gmail.com`, with `Reply-To` set to
-   the requester — so every request is filed and searchable in the club inbox
-   and hitting reply just works.
-2. **A confirmation**, to the requester.
+1. **The materials email**, to the requester: the Google Drive link, the
+   `sparkresources.github.io` address and its password. This is the whole
+   point of the form — people get the materials immediately instead of waiting
+   on someone to send them by hand.
+2. **The submission**, to `clubs.codespark@gmail.com`, with `Reply-To` set to
+   the requester, so every request is filed and searchable and hitting reply
+   just works. It leads with whether the materials email actually reached the
+   requester, and if it did not the subject is prefixed `[ACTION NEEDED]` —
+   a silent delivery failure would otherwise look exactly like a success.
+
+The link, the resources URL and the password are three constants at the top of
+`api/request.mjs`. Rotating the password is a one-line edit there.
 
 ### Turning it on
 
@@ -228,8 +236,11 @@ confirmation are separate, and a failed confirmation is logged and reported as
 request over it. But confirmations stay off until a domain is verified at
 resend.com/domains and `MAIL_FROM` is set to an address on it.
 
-### The confirmation copy
+### A note on the password
 
-The confirmation body in `api/request.mjs` is placeholder text written to be
-replaced. Armaan's template goes in the second `send(...)` call — both the
-`html` and the `text` version.
+The materials email sends `sparkresources.github.io`'s password to anyone who
+completes the form, which is deliberate — the materials are free and the email
+explicitly asks people to pass them on. Just be aware that it makes the
+password effectively public, so it should not protect anything that is not
+meant to be freely shared. To rotate it, change `RESOURCES_PASSWORD` in
+`api/request.mjs` and the site it guards.

@@ -977,10 +977,14 @@
       }).then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
-      }).then(function () {
+      }).then(function (data) {
         form.reset();
         if (status) {
-          status.textContent = 'Sent — check your inbox for confirmation';
+          // Don't promise an email that the server just told us it couldn't
+          // send - say a person will follow up instead.
+          status.textContent = (data && data.confirmed === false)
+            ? 'Request received — we\'ll email your materials shortly'
+            : 'Sent — your materials are in your inbox';
           status.classList.add('is-ok');
         }
         if (submit) submit.disabled = false;
