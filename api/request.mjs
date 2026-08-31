@@ -2,24 +2,38 @@
  * POST /api/request — the club materials request endpoint.
  *
  * Does two things on every valid submission:
- *   1. files the submission in the CodeSpark inbox (this is the "stored in
- *      our email" half — every request lands as a searchable thread, with
- *      Reply-To set to the requester so replying just works)
- *   2. sends the requester the materials email — the Drive link and the
+ *   1. sends the requester the materials email — the Drive link and the
  *      resources-site password
+ *   2. files the submission in the CodeSpark inbox, with Reply-To set to the
+ *      requester so hitting reply just works. It leads with whether the
+ *      materials email actually arrived, because a silent delivery failure
+ *      would otherwise look exactly like a success.
  *
- * Delivery runs through Resend. Required environment variables on Vercel:
- *   RESEND_API_KEY   — from resend.com/api-keys
- *   MAIL_FROM        — a verified sender, e.g. "CodeSpark Clubs <clubs@yourdomain>"
- *                      (falls back to Resend's shared onboarding sender)
- *   MAIL_TO          — where submissions are filed (defaults to the club inbox)
+ * Delivery goes through Gmail's SMTP using an app password, so mail comes from
+ * the club's real address and reaches anybody. Environment variables:
+ *   GMAIL_USER          — the sending account, e.g. clubs.codespark@gmail.com
+ *   GMAIL_APP_PASSWORD  — a 16-character app password from
+ *                         myaccount.google.com/apppasswords (NOT the account
+ *                         password; requires 2-Step Verification)
+ *   MAIL_TO             — where submissions are filed (defaults to GMAIL_USER)
  *
- * With no RESEND_API_KEY set this returns 503 and the front end quietly falls
- * back to a mail draft, so the form is never broken while the key is missing.
+ * With no GMAIL_APP_PASSWORD set this returns 503 and the front end quietly
+ * falls back to a mail draft, so the form is never broken while it is missing.
  */
 
-const INBOX = process.env.MAIL_TO || 'clubs.codespark@gmail.com';
-const FROM = process.env.MAIL_FROM || 'CodeSpark Clubs <onboarding@resend.dev>';
+import nodemailer from 'nodemailer';
+
+// Two SMTP round-trips run about four seconds, and Gmail is occasionally
+// slower. The platform default would cut that off mid-send.
+export const config = { maxDuration: 30 };
+
+const USER = process.env.GMAIL_USER || 'clubs.codespark@gmail.com';
+// Google displays app passwords in four groups of four. People copy the
+// spaces along with them, and SMTP auth then fails for a reason nobody can
+// see, so strip whitespace rather than trusting it was pasted clean.
+const PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
+const INBOX = process.env.MAIL_TO || USER;
+const FROM = `CodeSpark Clubs <${USER}>`;
 
 // What the materials email hands over. Kept here rather than buried in the
 // template so rotating the password or moving the folder is a one-line edit
@@ -34,17 +48,16 @@ const esc = (v) =>
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
-async function send(key, message) {
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
+// One connection per invocation. A serverless function is frozen between
+// requests, so a pooled transport would hold a socket Gmail closes underneath
+// us; opening and closing per request is the reliable shape here.
+function transport() {
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: { user: USER, pass: PASS },
   });
-  if (!res.ok) throw new Error(`resend ${res.status}: ${await res.text()}`);
-  return res.json();
 }
 
 export default async function handler(req, res) {
@@ -53,8 +66,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return res.status(503).json({ error: 'Mail not configured' });
+  if (!PASS) return res.status(503).json({ error: 'Mail not configured' });
 
   // Vercel parses JSON bodies, but be tolerant of a raw string.
   let body = req.body;
@@ -91,26 +103,23 @@ export default async function handler(req, res) {
     )
     .join('');
 
-  // Filing the submission is the part that must not fail — that is the
-  // club's record of the request. The confirmation is best-effort: on
-  // Resend's shared sender, mail to anyone but the account owner is
-  // rejected until a domain is verified, and a student losing their
-  // request because of that would be the worst possible failure.
+  const mailer = transport();
+
   try {
     // Send the materials first, so the notification can report what happened.
-    const confirmed = await confirm(key, { name, email });
+    const confirmed = await sendMaterials(mailer, { name, email });
 
     const banner = confirmed
       ? `<p style="background:#eef7ee;border-left:3px solid #2f7d32;padding:10px 14px;font:14px/1.5 -apple-system,sans-serif;color:#1b4d1e;margin:0 0 20px">` +
         `Materials email delivered to ${esc(email)}. No action needed.</p>`
       : `<p style="background:#fdeeea;border-left:3px solid #c0392b;padding:10px 14px;font:14px/1.5 -apple-system,sans-serif;color:#7a2318;margin:0 0 20px">` +
         `<strong>The materials email did NOT reach ${esc(email)}.</strong> ` +
-        `Send them the Drive link manually. (Usually the unverified-sender limit — see README.)</p>`;
+        `Send them the Drive link manually.</p>`;
 
-    await send(key, {
+    await mailer.sendMail({
       from: FROM,
-      to: [INBOX],
-      reply_to: email,
+      to: INBOX,
+      replyTo: email,
       subject: (confirmed ? '' : '[ACTION NEEDED] ') +
         `Club request — ${school} (${students || '?'} students)`,
       html:
@@ -128,6 +137,8 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('filing the submission failed:', err);
     return res.status(502).json({ error: 'Delivery failed' });
+  } finally {
+    mailer.close();
   }
 }
 
@@ -136,19 +147,17 @@ export default async function handler(req, res) {
 // making them wait on a person.
 //
 // Best-effort by design: it reports whether it went out and never throws, so a
-// delivery failure cannot take the submission down with it. Note the sender
-// restriction in README.md — on Resend's shared sender this is rejected for
-// anyone but the account owner until a domain is verified.
-async function confirm(key, { name, email }) {
+// delivery failure cannot take the submission down with it.
+async function sendMaterials(mailer, { name, email }) {
   const first = String(name).trim().split(/\s+/)[0] || 'there';
   const link = (url) =>
     `<a href="${url}" style="color:#c2410c;word-break:break-all">${url}</a>`;
 
   try {
-    await send(key, {
+    await mailer.sendMail({
       from: FROM,
-      to: [email],
-      reply_to: INBOX,
+      to: email,
+      replyTo: INBOX,
       subject: 'Your CodeSpark Clubs materials',
       html:
         `<div style="font:15px/1.65 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;color:#121416;max-width:560px">` +

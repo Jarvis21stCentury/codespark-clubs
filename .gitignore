@@ -8,3 +8,6 @@ robot-reveal/
 # Vercel
 .vercel
 .env*
+
+# Node
+node_modules/

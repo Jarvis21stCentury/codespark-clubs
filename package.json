@@ -1,0 +1,10 @@
+{
+  "name": "codespark-clubs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CodeSpark Clubs website. Static site plus one serverless function for the request form.",
+  "type": "module",
+  "dependencies": {
+    "nodemailer": "^7.0.9"
+  }
+}

@@ -186,7 +186,7 @@ licence, no attribution required. Filenames keep the Pexels photo ID
 ## Request form email
 
 `api/request.mjs` runs on every submission and sends two emails through
-[Resend](https://resend.com):
+**Gmail's SMTP**, using an app password on `clubs.codespark@gmail.com`:
 
 1. **The materials email**, to the requester: the Google Drive link, the
    `sparkresources.github.io` address and its password. This is the whole
@@ -201,40 +201,44 @@ licence, no attribution required. Filenames keep the Pexels photo ID
 The link, the resources URL and the password are three constants at the top of
 `api/request.mjs`. Rotating the password is a one-line edit there.
 
-### Turning it on
+### Why Gmail and not an email API
 
-**`RESEND_API_KEY` and `MAIL_TO` are already set** on the Vercel project across
-production, preview and development, and the endpoint has been tested
-end-to-end. What follows is what they are and how to change them.
+This ran on Resend first, and it did not work. Resend's shared
+`onboarding@resend.dev` sender only delivers to the account owner's own
+address, so every real submission was rejected with a 403 and the form quietly
+did nothing for anyone but the club itself. Getting past that needs a verified
+domain, and CodeSpark's URLs are on `github.io` and `vercel.app`, which are
+shared domains you cannot add DNS records to.
 
-1. Keys are created at resend.com/api-keys (the one in use is send-only).
-2. In the Vercel project → Settings → Environment Variables:
+Gmail needs no domain, sends from the club's real address, and its ~500
+messages/day limit is far above anything a club request form will do. If
+CodeSpark ever buys a domain, moving back to an email API is worth doing for
+deliverability — but nothing is blocked on it.
 
-   | Name | Value |
-   |---|---|
-   | `RESEND_API_KEY` | the key from step 1 (required) |
-   | `MAIL_FROM` | a verified sender, e.g. `CodeSpark Clubs <clubs@yourdomain>`. Without a verified domain, leave it unset and Resend's shared `onboarding@resend.dev` sender is used — fine for testing, but it will land in spam more often. |
-   | `MAIL_TO` | where submissions are filed. Defaults to `clubs.codespark@gmail.com`. |
+### Configuration
 
-3. Redeploy.
+All three variables are already set on the Vercel project across production,
+preview and development, and the endpoint is tested end-to-end.
 
-Until `RESEND_API_KEY` exists the endpoint returns 503 and the front end falls
-back to a mail draft, so the form is never broken while the key is missing —
+| Name | Value |
+|---|---|
+| `GMAIL_USER` | the sending account — `clubs.codespark@gmail.com` |
+| `GMAIL_APP_PASSWORD` | a 16-character app password, **not** the account password |
+| `MAIL_TO` | where submissions are filed. Defaults to `GMAIL_USER`. |
+
+The app password comes from
+[myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords),
+which requires 2-Step Verification on the account and is invisible without it.
+The code strips whitespace from it, because Google displays it in four groups
+of four and people paste the spaces along with it — that would otherwise fail
+SMTP auth for a reason nobody can see.
+
+Until `GMAIL_APP_PASSWORD` exists the endpoint returns 503 and the front end
+falls back to a mail draft, so the form is never broken while it is missing —
 it just stops being automatic.
 
-### The one thing still outstanding: a verified domain
-
-Without `MAIL_FROM` pointing at a domain you own, mail goes out through
-Resend's shared `onboarding@resend.dev` sender, which **only delivers to the
-Resend account owner's own address**. In practice that means submissions reach
-`clubs.codespark@gmail.com` fine, but the confirmation to a student's address
-will be rejected.
-
-The endpoint is built to survive that: filing the submission and sending the
-confirmation are separate, and a failed confirmation is logged and reported as
-`{ok:true, confirmed:false}` rather than failing the request. Nobody loses a
-request over it. But confirmations stay off until a domain is verified at
-resend.com/domains and `MAIL_FROM` is set to an address on it.
+To revoke access, delete the app password in the Google account. Mail stops;
+nothing else about the account changes.
 
 ### A note on the password
 
