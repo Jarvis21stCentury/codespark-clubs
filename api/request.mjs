@@ -1,9 +1,13 @@
 /**
  * POST /api/request — the club materials request endpoint.
  *
+ * The site itself is served by GitHub Pages (codesparkclubs.github.io), which
+ * cannot run code. This one function runs on Vercel, and both of the club's
+ * pages post to it cross-origin.
+ *
  * Does two things on every valid submission:
- *   1. sends the requester the materials email — the Drive link and the
- *      resources-site password
+ *   1. sends the requester the materials email — the Drive link and, when
+ *      configured, the resources-site password
  *   2. files the submission in the CodeSpark inbox, with Reply-To set to the
  *      requester so hitting reply just works. It leads with whether the
  *      materials email actually arrived, because a silent delivery failure
@@ -16,6 +20,8 @@
  *                         myaccount.google.com/apppasswords (NOT the account
  *                         password; requires 2-Step Verification)
  *   MAIL_TO             — where submissions are filed (defaults to GMAIL_USER)
+ *   RESOURCES_PASSWORD  — the sparkresources.github.io password. Optional: if
+ *                         it is missing the email just leaves that line out.
  *
  * With no GMAIL_APP_PASSWORD set this returns 503 and the front end quietly
  * falls back to a mail draft, so the form is never broken while it is missing.
@@ -39,13 +45,12 @@ const PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
 const INBOX = process.env.MAIL_TO || USER;
 const FROM = `CodeSpark Clubs <${USER}>`;
 
-// What the materials email hands over. Kept here rather than buried in the
-// template so rotating the password or moving the folder is a one-line edit
-// and does not mean reading through email markup.
+// What the materials email hands over.
 const DRIVE_URL =
   'https://drive.google.com/drive/folders/1hmYUTXw46KDtx2EpTzxbr0ychAh_FV6_?usp=sharing';
 const RESOURCES_URL = 'https://sparkresources.github.io/';
-const RESOURCES_PASSWORD = 'CoffeeLake92';
+// Kept in a Vercel environment variable, not in this public repo.
+const RESOURCES_PASSWORD = (process.env.RESOURCES_PASSWORD || '').trim();
 
 const esc = (v) =>
   String(v == null ? '' : v)
@@ -64,9 +69,78 @@ function transport() {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Abuse protection.
+//
+// This endpoint makes the club's Gmail send an email to whatever address is
+// typed in. Left open, anyone could script it to mail-bomb a stranger from
+// clubs.codespark@gmail.com and get the account suspended. So:
+//
+//   1. Only the club's own pages may call it from a browser (CORS allowlist).
+//   2. A hidden "website" field that people never see. Bots fill it in.
+//   3. A form submitted under three seconds after the page loaded is a bot.
+//   4. Rate limits per IP, per recipient address, and overall.
+//
+// The limits live in memory, so each warm serverless instance keeps its own
+// count and a cold start resets it. That stops the cheap, obvious abuse. For a
+// hard guarantee, add a Vercel Firewall rate-limit rule on /api/request in the
+// project dashboard; nothing here needs to change for that.
+// ---------------------------------------------------------------------------
+
+const ALLOWED_ORIGINS = new Set([
+  'https://codesparkclubs.github.io',
+  'https://codespark-clubs.vercel.app',
+]);
+
+const MIN_FILL_MS = 3000;
+const HOUR = 60 * 60 * 1000;
+const LIMITS = {
+  ip:    { max: 3,  windowMs: HOUR },       // 3 per IP per hour
+  email: { max: 1,  windowMs: 6 * HOUR },   // 1 per address per 6 hours
+  all:   { max: 60, windowMs: HOUR },       // 60 per hour in total
+};
+const hits = new Map();
+
+function limited(kind, key) {
+  const { max, windowMs } = LIMITS[kind];
+  const now = Date.now();
+  const id = kind + ':' + key;
+  const recent = (hits.get(id) || []).filter((t) => now - t < windowMs);
+  if (recent.length >= max) { hits.set(id, recent); return true; }
+  recent.push(now);
+  hits.set(id, recent);
+  // Keep memory bounded on a long-lived instance.
+  if (hits.size > 5000) {
+    for (const [k, v] of hits) if (!v.some((t) => now - t < 6 * HOUR)) hits.delete(k);
+  }
+  return false;
+}
+
+function clientIp(req) {
+  const fwd = String(req.headers['x-forwarded-for'] || '');
+  return fwd.split(',')[0].trim() || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+// Returns false when a browser on some other site is calling us.
+function cors(req, res) {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+  return !origin || ALLOWED_ORIGINS.has(origin);
+}
+
 export default async function handler(req, res) {
+  const originOk = cors(req, res);
+  if (req.method === 'OPTIONS') return res.status(originOk ? 204 : 403).end();
+  if (!originOk) return res.status(403).json({ error: 'Forbidden' });
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -88,6 +162,12 @@ export default async function handler(req, res) {
   }
   body = body || {};
 
+  // Spam traps. Answer as if it worked so a bot learns nothing.
+  const elapsed = Number(body.elapsed);
+  if (String(body.website || '').trim() || (Number.isFinite(elapsed) && elapsed < MIN_FILL_MS)) {
+    return res.status(200).json({ ok: true, confirmed: true });
+  }
+
   const name = String(body.name || '').trim().slice(0, 120);
   const email = String(body.email || '').trim().slice(0, 200);
   const school = String(body.school || '').trim().slice(0, 200);
@@ -97,6 +177,14 @@ export default async function handler(req, res) {
 
   if (!name || !school || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return res.status(400).json({ error: 'Missing or invalid fields' });
+  }
+
+  if (limited('ip', clientIp(req)) || limited('email', email.toLowerCase()) || limited('all', '*')) {
+    res.setHeader('Retry-After', '3600');
+    return res.status(429).json({
+      error: 'Too many requests',
+      message: 'We already have a request from you. Check your inbox, or email clubs.codespark@gmail.com.',
+    });
   }
 
   const rows = [
@@ -155,16 +243,35 @@ export default async function handler(req, res) {
   }
 }
 
+// The greeting is the only text a requester controls in the email we send
+// them, so keep it to something that looks like a first name. Anything else
+// (a link, markup, a sentence of spam) falls back to "there".
+function firstName(name) {
+  const word = String(name).trim().split(/\s+/)[0] || '';
+  return /^\p{L}[\p{L}'\-.]{0,29}$/u.test(word) ? word : 'there';
+}
+
 // The materials email — the whole point of the form. It hands over the Drive
-// link and the resources-site password the moment someone asks, rather than
-// making them wait on a person.
+// link (and the resources-site password, when configured) the moment someone
+// asks, rather than making them wait on a person.
 //
 // Best-effort by design: it reports whether it went out and never throws, so a
 // delivery failure cannot take the submission down with it.
 async function sendMaterials(mailer, { name, email }) {
-  const first = String(name).trim().split(/\s+/)[0] || 'there';
+  const first = firstName(name);
   const link = (url) =>
     `<a href="${url}" style="color:#c2410c;word-break:break-all">${url}</a>`;
+
+  const siteHtml = RESOURCES_PASSWORD
+    ? `<p style="margin-bottom:6px">Optionally you may also access the material through our website: ${link(RESOURCES_URL)}</p>` +
+      `<p style="margin-top:0">The password is: ` +
+        `<strong style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f1f2f4;padding:3px 7px;border-radius:4px">${esc(RESOURCES_PASSWORD)}</strong>` +
+      `</p>`
+    : '';
+  const siteText = RESOURCES_PASSWORD
+    ? `Optionally you may also access the material through our website: ${RESOURCES_URL}\n` +
+      `The password is: ${RESOURCES_PASSWORD}\n`
+    : '';
 
   try {
     await mailer.sendMail({
@@ -182,10 +289,7 @@ async function sendMaterials(mailer, { name, email }) {
           `<hr style="border:0;border-top:1px solid #e3e5e8;margin:28px 0">` +
           `<p style="margin-bottom:6px">Here is the link to access the free materials (via Google Drive):</p>` +
           `<p style="margin-top:0">${link(DRIVE_URL)}</p>` +
-          `<p style="margin-bottom:6px">Optionally you may also access the material through our website: ${link(RESOURCES_URL)}</p>` +
-          `<p style="margin-top:0">The password is: ` +
-            `<strong style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f1f2f4;padding:3px 7px;border-radius:4px">${RESOURCES_PASSWORD}</strong>` +
-          `</p>` +
+          siteHtml +
         `</div>`,
       text:
         `Hi ${first},\n\n` +
@@ -195,8 +299,7 @@ async function sendMaterials(mailer, { name, email }) {
         `Best,\n\nCodeSparkClubs Team\n\n\n` +
         `Here is the link to access the free materials (via Google Drive):\n` +
         `${DRIVE_URL}\n\n` +
-        `Optionally you may also access the material through our website: ${RESOURCES_URL}\n` +
-        `The password is: ${RESOURCES_PASSWORD}\n`,
+        siteText,
     });
     return true;
   } catch (err) {
